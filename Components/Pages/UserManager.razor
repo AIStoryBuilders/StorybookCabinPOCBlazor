@@ -1,0 +1,112 @@
+﻿@page "/usermanager"
+@rendermode InteractiveServer
+@using System
+@using System.Collections.Generic
+@using System.Linq
+@using System.Linq.Dynamic.Core
+@using Radzen
+@using Radzen.Blazor
+@using System.Security.Claims
+@using System.IO
+@using System.Text
+@using System.Web
+@using System.Drawing
+@using StorybookCabinPOCBlazor.Models
+@inherits OwningComponentBase<StorybookCabinPOCBlazorService>
+@inject DialogService DialogService
+@inject IConfiguration _configuration
+@inject IHttpContextAccessor httpContextAccessor
+@inject AuthenticationStateProvider AuthenticationStateProvider
+<h3>User Manager</h3>
+
+@if (@IsSuperAdmin)
+{
+    @if (@Message != "")
+    {
+        <h4 style="color:red">@Message</h4>
+    }
+    <br />
+    <RadzenDataGrid AllowPaging="true" PageSize="15" AllowSorting="true" Data="@Service.GetAllUsersAsync()"
+                    TItem="User" AllowFiltering="true" FilterMode="FilterMode.Simple"
+                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                    LogicalFilterOperator="LogicalFilterOperator.Or" AllowColumnResize="true">
+        <Columns>
+            <RadzenDataGridColumn Width="80px" TItem="User"
+                                  Property="userId" Title="Edit" Sortable=false Filterable=false>
+                <Template Context="data">
+                    <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="edit" Click=@(() => EditUser(data)) />
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="User" Property="FirstName" Title="First Name" Width="200px" />
+            <RadzenDataGridColumn TItem="User" Property="LastName" Title="Last Name" Width="200px" />
+            <RadzenDataGridColumn TItem="User" Property="Email" Title="Email" Width="200px" />
+            <RadzenDataGridColumn Width="80px" TItem="User"
+                                  Property="IsSuperUser" Title="Is SuperUser" Sortable=false Filterable=false>
+                <Template Context="data">
+                    <RadzenCheckBox TValue="bool" Disabled="true" @bind-Value="data.IsSuperUser" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+    @if (ShowEditUser)
+    {
+        <UserEditControl SelectedDTOUser="SelectedDTOUser" UserUpdated="SaveUser" />
+    }
+}
+@code {
+#nullable disable
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    System.Security.Claims.ClaimsPrincipal CurrentUser;
+
+    User SelectedDTOUser = new User();
+
+    public bool IsSuperAdmin = false;
+    bool ShowEditUser = false;
+    public string Message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        CurrentUser = authState.User;
+
+        if (CurrentUser.Identity != null)
+        {
+            if (CurrentUser.Identity.IsAuthenticated)
+            {
+                try
+                {
+                    var Objectidentifier =
+                    CurrentUser.Claims.FirstOrDefault(
+                    c => c.Type ==
+                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?
+                    .Value;
+
+                    var User = await Service.GetUserFromObjectidentifierAsync(Objectidentifier);
+
+                    IsSuperAdmin = User.IsSuperUser;
+                }
+                catch
+                {
+
+                }
+            }
+        }
+    }
+
+    void EditUser(User DTOUser)
+    {
+        Message = "";
+
+        SelectedDTOUser = DTOUser;
+
+        ShowEditUser = true;
+    }
+
+    private void SaveUser()
+    {
+        ShowEditUser = false;
+    }
+}

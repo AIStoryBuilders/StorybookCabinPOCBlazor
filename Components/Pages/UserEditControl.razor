@@ -1,0 +1,127 @@
+﻿@using System
+@using System.Collections.Generic
+@using System.Linq
+@using System.Linq.Dynamic.Core
+@using Radzen
+@using Radzen.Blazor
+@using System.Security.Claims
+@using System.IO
+@using System.Text
+@using System.Web
+@using System.Drawing
+@using StorybookCabinPOCBlazor.Models
+@inherits OwningComponentBase<StorybookCabinPOCBlazorService>
+
+<div class="modal" tabindex="-1" style="display:block;background-color:gainsboro" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit User</h3>
+            </div>
+            <div class="modal-body">
+
+                @if (@strError != "")
+                {
+                    <h4 style="color:red">@strError</h4>
+                }
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="form-group" cellpadding="4" cellspacing="4" style="width: 100%;">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <label for="User Name" class="control-label" style="font-weight: bold">User Name: </label>
+                                    </td>
+                                    <td>
+                                        <RadzenTextBox @bind-Value="SelectedDTOUser.DisplayName" style="width: 100%;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="Name" class="control-label" style="font-weight: bold">First Name: </label>
+                                    </td>
+                                    <td>
+                                        <RadzenTextBox @bind-Value="SelectedDTOUser.FirstName" style="width: 100%;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="Company" class="control-label" style="font-weight: bold">Last Name: </label>
+                                    </td>
+                                    <td>
+                                        <RadzenTextBox @bind-Value="SelectedDTOUser.LastName" style="width: 100%;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="Email" class="control-label" style="font-weight: bold">Email: </label>
+                                    </td>
+                                    <td>
+                                        <RadzenTextBox @bind-Value="SelectedDTOUser.Email" style="width: 100%;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label for="Active" class="control-label" style="font-weight: bold">Is SuperUser: </label>
+                                    </td>
+                                    <td>
+                                        <RadzenCheckBox Disabled="true" TValue="bool" @bind-Value="SelectedDTOUser.IsSuperUser" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <RadzenButton Click="UpdateUser"
+                                      Text="Save" ButtonStyle="ButtonStyle.Success"
+                                      Style="margin-bottom: 10px; width: 150px" />
+                        &nbsp;&nbsp;&nbsp;
+                        <RadzenButton Click="Close"
+                                      Text="Close" ButtonStyle="ButtonStyle.Light"
+                                      Style="margin-bottom: 10px; width: 150px" />
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+#nullable disable
+    [Parameter] public User SelectedDTOUser { get; set; }
+    [Parameter] public EventCallback<User> UserUpdated { get; set; }
+
+    string strError = "";
+
+    private async Task UpdateUser()
+    {
+        try
+        {
+            strError = "";
+
+            var Result = Service.UpdateUser(SelectedDTOUser);
+
+            if (Result == "")
+            {
+                await UserUpdated.InvokeAsync();
+            }
+            else
+            {
+                strError = Result;
+            }
+        }
+        catch (Exception ex)
+        {
+            strError = ex.GetBaseException().Message;
+        }
+    }
+
+    private void Close()
+    {
+        strError = "";
+        UserUpdated.InvokeAsync();
+    }
+}
