@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
@@ -325,6 +326,19 @@ namespace StorybookCabinPOCBlazor
             }
 
             app.UseHttpsRedirection();
+
+            // **** Godot MIME Support ****
+
+            // Set up custom content types - associating file extension to MIME type
+            var provider = new FileExtensionContentTypeProvider();
+
+            // Add new mappings
+            provider.Mappings[".pck"] = "application/octet-stream";
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ContentTypeProvider = provider
+            });
 
             app.UseStaticFiles();
 
