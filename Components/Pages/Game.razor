@@ -5,9 +5,18 @@
 
 <h1>Game</h1>
 
-<p role="status">Current count: @currentCount</p>
+<AuthorizeView>
+    <Authorized>
+        <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+        <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    </Authorized>
+    <NotAuthorized>
+            <NavLink class="nav-link" href="/MicrosoftIdentity/Account/SignIn">
+                You must Sign in
+            </NavLink>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private int currentCount = 0;
