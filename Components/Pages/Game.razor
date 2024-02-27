@@ -1,6 +1,11 @@
 ﻿@page "/game"
-@using StorybookCabinPOCBlazor.Classes
 @rendermode InteractiveServer
+@inherits OwningComponentBase<StorybookCabinPOCBlazorService>
+@using StorybookCabinPOCBlazor.Models
+@using StorybookCabinPOCBlazor.Classes
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment HostEnvironment
+@inject IHttpContextAccessor httpContextAccessor
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
@@ -43,12 +48,38 @@
     string GodotApplicationName = "BlazorWebService/BlazorWebService";
     string GodotArgs = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // get the base url of the current page
-        var baseURI = NavigationManager.BaseUri.Replace("https://", "").Replace("http://", "").Replace("/", "");
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-        GodotArgs = @$"--WebApplicationURL=https://{baseURI}/,--UserName=TestUser,--HTTPToken=1234ABCD#";
+        var user = authState.User;
+
+        if (user.Identity != null)
+        {
+            if (user.Identity.IsAuthenticated)
+            {
+                try
+                {
+                    var Objectidentifier =
+                    user.Claims.FirstOrDefault(
+                    c => c.Type ==
+                    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?
+                    .Value;
+
+                    var User = await Service.GetUserFromObjectidentifierAsync(Objectidentifier);
+                    var credits = await Service.GetUserCreditsFromObjectidentifierAsync(Objectidentifier);
+
+                    // get the base url of the current page
+                    var baseURI = NavigationManager.BaseUri.Replace("https://", "").Replace("http://", "").Replace("/", "");
+
+                    GodotArgs = @$"--WebApplicationURL=https://{baseURI}/,--UserName={User.Email},--HTTPToken={User.Objectidentifier}";
+                }
+                catch(Exception ex)
+                {
+                    GodotMessage = ex.Message;
+                }
+            }
+        }
     }
 
     // method to run on load of page
