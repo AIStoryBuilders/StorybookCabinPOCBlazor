@@ -6,11 +6,8 @@
 
 <PageTitle>Game</PageTitle>
 
-<h1>Game</h1>
-
 <AuthorizeView>
     <Authorized>
-        <h4>Call Web Service</h4>
         <button class="btn btn-primary" hidden=@LoadButtonVisible @onclick="LoadApp">Load App</button>
         <br>
         <h4>@GodotMessage</h4>
@@ -30,9 +27,9 @@
         </div>
     </Authorized>
     <NotAuthorized>
-            <h4>
-                You must Sign in
-            </h4>
+            <p>
+                To play the game you must <a href="/MicrosoftIdentity/Account/SignIn">Sign in with your social account</a>
+            </p>
     </NotAuthorized>
 </AuthorizeView>
 
