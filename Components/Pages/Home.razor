@@ -20,14 +20,13 @@
         </div>
     </Authorized>
     <NotAuthorized>
-        <p>To get started, <a href="/MicrosoftIdentity/Account/SignIn">Sign in with your social account</a></p>
+        <p>To get started, <a href="logincontrol">Sign in with your social account</a></p>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
 
     string WelcomeMessage = "";
-    int Credits = 0;
 
     protected override async Task OnInitializedAsync()
     {
