@@ -1,5 +1,6 @@
 ﻿@page "/logincontrol"
 @rendermode InteractiveServer
+@inject NavigationManager NavigationManager
 <AuthorizeView>
     <Authorized>
         <div class="nav-item px-3">
@@ -9,13 +10,78 @@
         </div>
     </Authorized>
     <NotAuthorized>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/MicrosoftIdentity/Account/SignIn">
-                Sign in
-            </NavLink>
+        <div style="text-align: center; height: 600px; color:dimgrey;vertical-align:central;font-size:small;background-image: url(@backgroundImage); width: 100%;padding:0px 0px 0px 0px;background-position: 50% 50%;background-repeat: no-repeat;background-size: cover;margin-top:100px;">
+            <div style="height: 75px;">
+                &nbsp;
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-6 py-2" style="background-color:white;vertical-align:central;color:dimgrey;text-align: center;padding:4px 7px 2px 4px;opacity: 0.95;-webkit-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.15);-moz-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.15);box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.15);">
+                    <div class="row">
+                        <div class="col-xl-12 col-lg-12 py-2" align="left" style="padding:4px 40px 2px 40px;">
+                            <br />
+                            <RadzenCheckBox @bind-Value=@checkBoxIAgree Name="IAgree" TValue="bool" Change=@(args => OnCheckboxChange()) />
+                            <RadzenLabel Text="I agree to the following:" Component="IAgree" Style="margin-left: 5px;" />
+                            <br /><br />
+                            <span align="left">
+                                <p>I agree to follow all rules.</p>
+                            </span>
+
+                            <br />
+                            <br />
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 py-2" align="left">
+                                    @if (@LoginClicked == false)
+                                    {
+                                        <RadzenButton style="margin: 0 1rem 1rem 0" Click="OnClickLogin" Text="Log In" ButtonStyle="ButtonStyle.Secondary" />
+                                    }
+                                    else
+                                    {
+                                        <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Style="margin-bottom: 20px" />
+                                    }
+                                </div>
+                            </div>
+                            <div class="row">
+                                @if (@Message != "")
+                                {
+                                    <h4 style="color:red">@Message</h4>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </NotAuthorized>
 </AuthorizeView>
 @code {
+    string Message = "";
+    bool LoginClicked = false;
+    string backgroundImage = "images/Background.jpg";
+    bool IAgree = false;
+    bool checkBoxIAgree = false;
+    void OnClickLogin()
+    {
+        if (IAgree == true)
+        {
+            LoginClicked = true;
+            Message = "";
+            NavigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn",true);
+        }
+        else
+        {
+            Message = "You must agree to the terms to continue.";
+        }
+    }
+    void OnCheckboxChange()
+    {
+        if (IAgree == true)
+        {
+            IAgree = false;
+        }
+        else
+        {
+            IAgree = true;
+        }
+    }
 
 }
