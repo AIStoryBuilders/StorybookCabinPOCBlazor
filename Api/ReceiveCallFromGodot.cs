@@ -6,6 +6,7 @@ using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using OpenAI;
 using OpenAI.Models;
+using StorybookCabinPOCBlazor.Models;
 
 namespace StorybookCabinPOCBlazor.Api
 {
@@ -14,19 +15,38 @@ namespace StorybookCabinPOCBlazor.Api
     public class ReceiveCallFromGodot : ControllerBase
     {
         private readonly OpenAIServiceOptions _openAIServiceOptions;
+        private StorybookCabinPOCBlazorContext _storybookCabinPOCBlazorContext;
 
-        public ReceiveCallFromGodot(IOptions<OpenAIServiceOptions> openAIServiceOptions)
+        public ReceiveCallFromGodot(
+            IOptions<OpenAIServiceOptions> openAIServiceOptions,
+            StorybookCabinPOCBlazorContext storybookCabinPOCBlazorContext)
         {
             _openAIServiceOptions = openAIServiceOptions.Value;
+            _storybookCabinPOCBlazorContext = storybookCabinPOCBlazorContext;
         }
 
         [HttpPost]
         public IActionResult Post([FromBody] UserData userData)
         {
-            // Handle the received data (e.g., authentication, logging, etc.)
+            // Verify the user's identity by checking the database
+            var userName = userData.userName;
+            var hTTPToken = userData.hTTPToken;
 
-            // Call GetOpenAIResponse to get a response from OpenAI
-            var openAIResponse = GetOpenAIResponse(userData.userText).Result;
+            var user = _storybookCabinPOCBlazorContext.Users
+                .Where(u => u.Email == userName && u.Objectidentifier == hTTPToken)
+                .FirstOrDefault();
+
+            string openAIResponse = "";
+
+            if (user != null)
+            {
+                // Call GetOpenAIResponse to get a response from OpenAI
+                openAIResponse = GetOpenAIResponse(userData.userText).Result;
+            }
+            else
+            {
+                openAIResponse = "You are not authorized to use this service.";
+            }
 
             MessageData objMessageData = new MessageData();
             objMessageData.message = $"{openAIResponse}";
