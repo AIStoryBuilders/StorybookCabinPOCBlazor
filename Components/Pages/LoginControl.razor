@@ -10,42 +10,37 @@
         </div>
     </Authorized>
     <NotAuthorized>
-        <div style="text-align: center; height: 600px; color:dimgrey;vertical-align:central;font-size:small;background-image: url(@backgroundImage); width: 100%;padding:0px 0px 0px 0px;background-position: 50% 50%;background-repeat: no-repeat;background-size: cover;margin-top:100px;">
-            <div style="height: 75px;">
-                &nbsp;
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-xl-6 col-lg-6 py-2" style="background-color:white;vertical-align:central;color:dimgrey;text-align: center;padding:4px 7px 2px 4px;opacity: 0.95;-webkit-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.15);-moz-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.15);box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.15);">
-                    <div class="row">
-                        <div class="col-xl-12 col-lg-12 py-2" align="left" style="padding:4px 40px 2px 40px;">
-                            <br />
-                            <RadzenCheckBox @bind-Value=@checkBoxIAgree Name="IAgree" TValue="bool" Change=@(args => OnCheckboxChange()) />
-                            <RadzenLabel Text="I agree to the following:" Component="IAgree" Style="margin-left: 5px;" />
-                            <br /><br />
-                            <span align="left">
-                                <p>I agree to follow all rules.</p>
-                            </span>
+        <div class="row justify-content-center">
+            <div class="col-xl-6 col-lg-6 py-2" style="background-color:white;vertical-align:central;color:dimgrey;text-align: center;padding:4px 7px 2px 4px;opacity: 0.95;-webkit-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.15);-moz-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.15);box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.15);">
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 py-2" align="left" style="padding:4px 40px 2px 40px;">
+                        <br />
+                        <RadzenCheckBox @bind-Value=@checkBoxIAgree Name="IAgree" TValue="bool" Change=@(args => OnCheckboxChange()) />
+                        <RadzenLabel Text="I Accept" Component="IAgree" Style="margin-left: 5px;" />
+                        <br /><br />
+                        <span align="left">
+                            <p>By clicking the Accept button, you acknowledge and agree to abide by the following terms of service: You must be of legal age in your jurisdiction or have parental consent to use this service. You agree to conduct yourself in a manner that respects the rights and enjoyment of others within the game community, refraining from harassment, discrimination, or any form of abusive behavior. You understand that the game's content, including but not limited to graphics, audio, and text, is protected by copyright and intellectual property laws, and you agree not to modify, distribute, or exploit it without proper authorization. You accept that the game may be updated or modified at any time, and your continued use constitutes acceptance of these changes. You acknowledge that the game may collect and process personal data in accordance with our privacy policy, and you consent to such collection and processing. Breach of these terms may result in the suspension or termination of your account.</p>
+                        </span>
 
-                            <br />
-                            <br />
-                            <div class="row">
-                                <div class="col-xl-12 col-lg-12 py-2" align="left">
-                                    @if (@LoginClicked == false)
-                                    {
-                                        <RadzenButton style="margin: 0 1rem 1rem 0" Click="OnClickLogin" Text="Log In" ButtonStyle="ButtonStyle.Secondary" />
-                                    }
-                                    else
-                                    {
-                                        <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Style="margin-bottom: 20px" />
-                                    }
-                                </div>
-                            </div>
-                            <div class="row">
-                                @if (@Message != "")
+                        <br />
+                        <br />
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 py-2" align="left">
+                                @if (@LoginClicked == false)
                                 {
-                                    <h4 style="color:red">@Message</h4>
+                                    <RadzenButton style="margin: 0 1rem 1rem 0" Click="OnClickLogin" Text="Log In" ButtonStyle="ButtonStyle.Secondary" />
+                                }
+                                else
+                                {
+                                    <RadzenProgressBar Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" Style="margin-bottom: 20px" />
                                 }
                             </div>
+                        </div>
+                        <div class="row">
+                            @if (@Message != "")
+                            {
+                                <h4 style="color:red">@Message</h4>
+                            }
                         </div>
                     </div>
                 </div>
@@ -56,7 +51,6 @@
 @code {
     string Message = "";
     bool LoginClicked = false;
-    string backgroundImage = "images/Background.jpg";
     bool IAgree = false;
     bool checkBoxIAgree = false;
     void OnClickLogin()
@@ -65,7 +59,7 @@
         {
             LoginClicked = true;
             Message = "";
-            NavigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn",true);
+            NavigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", true);
         }
         else
         {
