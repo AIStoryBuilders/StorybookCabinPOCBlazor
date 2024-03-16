@@ -27,6 +27,8 @@ namespace StorybookCabinPOCBlazor
             builder.Configuration.AddEnvironmentVariables()
                 .AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 
+            builder.Services.Configure<OpenAIServiceOptions>(builder.Configuration.GetSection("OpenAIServiceOptions"));
+
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents()
