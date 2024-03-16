@@ -31,6 +31,7 @@ namespace StorybookCabinPOCBlazor.Api
     {
         public string? userName { get; set; }
         public string? hTTPToken { get; set; }
+        public string? userText { get; set; }
     }
 
     public class MessageData
