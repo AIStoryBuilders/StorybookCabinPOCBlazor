@@ -31,6 +31,7 @@ namespace StorybookCabinPOCBlazor.Api
             // Verify the user's identity by checking the database
             var userName = userData.userName;
             var hTTPToken = userData.hTTPToken;
+            var gameBoard = userData.gameBoard;
 
             var user = _storybookCabinPOCBlazorContext.Users
                 .Where(u => u.Email == userName && u.Objectidentifier == hTTPToken)
