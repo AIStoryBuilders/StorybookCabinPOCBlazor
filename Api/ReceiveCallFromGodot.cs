@@ -29,9 +29,10 @@ namespace StorybookCabinPOCBlazor.Api
         public IActionResult Post([FromBody] UserData userData)
         {
             // Verify the user's identity by checking the database
-            var userName = userData.userName;
-            var hTTPToken = userData.hTTPToken;
-            var gameBoard = userData.gameBoard;
+            var userName = userData.UserName;
+            var hTTPToken = userData.HttpToken;
+            var userText = userData.UserText;
+            var gameBoard = userData.GameBoard;
 
             var user = _storybookCabinPOCBlazorContext.Users
                 .Where(u => u.Email == userName && u.Objectidentifier == hTTPToken)
@@ -42,7 +43,7 @@ namespace StorybookCabinPOCBlazor.Api
             if (user != null)
             {
                 // Call GetOpenAIResponse to get a response from OpenAI
-                openAIResponse = GetOpenAIResponse(userData.userText).Result;
+                openAIResponse = GetOpenAIResponse(userData.UserText).Result;
             }
             else
             {
@@ -93,13 +94,18 @@ namespace StorybookCabinPOCBlazor.Api
         }
     }
 
+    public class GameBoardCell
+    {
+        public string Type { get; set; }
+    }
+
     public class UserData
     {
-        public string? userName { get; set; }
-        public string? hTTPToken { get; set; }
-        public string? userText { get; set; }
-		public string? gameBoard { get; set; }
-	}
+        public string? UserName { get; set; }
+        public string? HttpToken { get; set; }
+        public string? UserText { get; set; }
+        public Dictionary<string, GameBoardCell>? GameBoard { get; set; }
+    }
 
     public class MessageData
     {
