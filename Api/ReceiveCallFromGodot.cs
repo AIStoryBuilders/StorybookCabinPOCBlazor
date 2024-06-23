@@ -96,7 +96,7 @@ namespace StorybookCabinPOCBlazor.Api
 
     public class GameBoardCell
     {
-        public string Type { get; set; }
+        public string? Type { get; set; }
     }
 
     public class UserData
