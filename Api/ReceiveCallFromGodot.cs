@@ -7,6 +7,8 @@ using Microsoft.Identity.Client;
 using OpenAI;
 using OpenAI.Models;
 using StorybookCabinPOCBlazor.Models;
+using System.Text;
+using System.Text.Json;
 
 namespace StorybookCabinPOCBlazor.Api
 {
@@ -43,7 +45,7 @@ namespace StorybookCabinPOCBlazor.Api
             if (user != null)
             {
                 // Call GetOpenAIResponse to get a response from OpenAI
-                openAIResponse = GetOpenAIResponse(userData.UserText).Result;
+                openAIResponse = GetOpenAIResponse(userData).Result;
             }
             else
             {
@@ -65,7 +67,7 @@ namespace StorybookCabinPOCBlazor.Api
         }
 
         // OpenAI
-        private async Task<string> GetOpenAIResponse(string? userText)
+        private async Task<string> GetOpenAIResponse(UserData userData)
         {
             // Get the API key from the appsettings.json file
             var ApiKey = _openAIServiceOptions.ApiKey;
@@ -75,17 +77,32 @@ namespace StorybookCabinPOCBlazor.Api
             var api =
             new OpenAIClient(new OpenAIAuthentication(ApiKey));
 
+            // Serialize userData.GameBoard to a string using the built-in .NET JSON serializer
+            string jsonGameBoard = JsonSerializer.Serialize(userData.GameBoard);
+
+
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Please examine the following json that represents the gameboard:");
+            sb.AppendLine("");
+            sb.AppendLine(jsonGameBoard);
+            sb.AppendLine("");
+            sb.AppendLine("Please update the json to respond to this request:");
+            sb.AppendLine("");
+            sb.AppendLine(userData.UserText);
+            sb.AppendLine("");
+
             var messages = new List<OpenAI.Chat.Message>
             {
                 new OpenAI.Chat.Message(Role.System, "You are a helpful assistant."),
-                new OpenAI.Chat.Message(Role.User, userText),
+                new OpenAI.Chat.Message(Role.User, sb.ToString()),
             };
 
             // Create a new instance of the ChatRequest class, passing in the
             // messages list, and other parameters
 
             var chatRequest = new OpenAI.Chat.ChatRequest(
-                messages, temperature: 0.1, model: Model.GPT3_5_Turbo);
+                messages, temperature: 0.1, responseFormat: ChatResponseFormat.Json, model: Model.GPT4o);
 
             var ChatResponse =
             await api.ChatEndpoint.GetCompletionAsync(chatRequest);
