@@ -80,8 +80,6 @@ namespace StorybookCabinPOCBlazor.Api
             // Serialize userData.GameBoard to a string using the built-in .NET JSON serializer
             string jsonGameBoard = JsonSerializer.Serialize(userData.GameBoard);
 
-
-
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Please examine the following json that represents the gameboard:");
             sb.AppendLine("");
