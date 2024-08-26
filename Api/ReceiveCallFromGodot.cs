@@ -72,41 +72,42 @@ namespace StorybookCabinPOCBlazor.Api
             // Get the API key from the appsettings.json file
             var ApiKey = _openAIServiceOptions.ApiKey;
 
-            // Create a new instance of OpenAIClient using
-            // the ApiKey and Organization
-            var api =
-            new OpenAIClient(new OpenAIAuthentication(ApiKey));
+            // Create a new instance of OpenAIClient using the ApiKey
+            var api = new OpenAIClient(new OpenAIAuthentication(ApiKey));
 
-            // Serialize userData.GameBoard to a string using the built-in .NET JSON serializer
+            // Serialize 
             string jsonGameBoard = JsonSerializer.Serialize(userData.GameBoard);
+            string jsonCharacterInfo = JsonSerializer.Serialize(userData.CharacterInfo);
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Please examine the following json that represents the gameboard:");
+            sb.AppendLine("Please examine the following JSON that represents the chracter info:");
+            sb.AppendLine(jsonCharacterInfo);
             sb.AppendLine("");
+            sb.AppendLine("Please examine the following JSON that represents the gameboard:");
             sb.AppendLine(jsonGameBoard);
             sb.AppendLine("");
-            sb.AppendLine("Please update the json to respond to this request:");
-            sb.AppendLine("");
+            sb.AppendLine("Respond to the following request strictly in JSON format only:");
             sb.AppendLine(userData.UserText);
-            sb.AppendLine("");
 
             var messages = new List<OpenAI.Chat.Message>
             {
-                new OpenAI.Chat.Message(Role.System, "You are a helpful assistant."),
-                new OpenAI.Chat.Message(Role.User, sb.ToString()),
+                new OpenAI.Chat.Message(Role.System, "You are a helpful assistant that responds in JSON format."),
+                new OpenAI.Chat.Message(Role.User, sb.ToString())
             };
 
-            // Create a new instance of the ChatRequest class, passing in the
-            // messages list, and other parameters
-
+            // Create a new instance of the ChatRequest class, ensuring we ask for JSON format
             var chatRequest = new OpenAI.Chat.ChatRequest(
-                messages, temperature: 0.1, responseFormat: ChatResponseFormat.Json, model: Model.GPT4o);
+                messages,
+                temperature: 0.1,
+                model: Model.GPT4o
+            );
 
-            var ChatResponse =
-            await api.ChatEndpoint.GetCompletionAsync(chatRequest);
+            var chatResponse = await api.ChatEndpoint.GetCompletionAsync(chatRequest);
 
-            return ChatResponse.FirstChoice.Message;
+            // Return the JSON response
+            return chatResponse.FirstChoice.Message.Content;
         }
+
     }
 
     public class GameBoardCell
@@ -115,16 +116,28 @@ namespace StorybookCabinPOCBlazor.Api
         public string? description { get; set; }
     }
 
+    public class CharacterInfoCell
+    {
+        public int age { get; set; }
+        public string? description { get; set; }
+        public string? name { get; set; }
+        public string? gender { get; set; }
+    }
+
     public class UserData
     {
         public string? UserName { get; set; }
         public string? HttpToken { get; set; }
         public string? UserText { get; set; }
         public Dictionary<string, GameBoardCell>? GameBoard { get; set; }
+        public Dictionary<string, CharacterInfoCell>? CharacterInfo { get; set; }
     }
 
     public class MessageData
     {
         public string? message { get; set; }
     }
+
+
+
 }
