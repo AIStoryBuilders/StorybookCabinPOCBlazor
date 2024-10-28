@@ -45,7 +45,12 @@ namespace StorybookCabinPOCBlazor.Api
             if (user != null)
             {
                 // Call GetOpenAIResponse to get a response from OpenAI
-                openAIResponse = GetOpenAIResponse(userData).Result;
+                var OpenAIReponse = GetOpenAIResponse(userData);
+
+                if(OpenAIReponse.Result != null)
+                {
+                    openAIResponse = OpenAIReponse.Result;
+                }
             }
             else
             {
@@ -80,13 +85,24 @@ namespace StorybookCabinPOCBlazor.Api
             string jsonCharacterInfo = JsonSerializer.Serialize(userData.CharacterInfo);
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Please examine the following JSON that represents the chracter info:");
+            sb.AppendLine("Please examine the following JSON that represents the #CharacterInfo and their coordinates on the gameboard:");
             sb.AppendLine(jsonCharacterInfo);
             sb.AppendLine("");
             sb.AppendLine("Please examine the following JSON that represents the gameboard:");
             sb.AppendLine(jsonGameBoard);
             sb.AppendLine("");
-            sb.AppendLine("Respond to the following request strictly in JSON format only:");
+            sb.AppendLine("Please do the following based on the #PlayerInstructions.:");
+            sb.AppendLine("");
+            sb.AppendLine("#1 - Only output an updated #CharacterInfo json object that updates the character coordinates on the gameboard ");
+            sb.AppendLine("based on the #PlayerInstructions. ");
+            sb.AppendLine("");
+            sb.AppendLine("#2 - Only allow #CharacterInfo to put a character in a gameboard coordinate thay is Type empty.");
+            sb.AppendLine("");
+            sb.AppendLine("#3 - A #CharacterInfo coordinate cannot occupy the same coordinate as another character.");
+            sb.AppendLine("");
+            sb.AppendLine("#4 - Only update #CharacterInfo coordinates");
+            sb.AppendLine("");
+            sb.AppendLine("#Player Instructions: ");
             sb.AppendLine(userData.UserText);
 
             var messages = new List<OpenAI.Chat.Message>
