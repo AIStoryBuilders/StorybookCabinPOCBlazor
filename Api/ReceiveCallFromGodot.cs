@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Identity.Client;
 using OpenAI;
+using OpenAI.Chat;
 using OpenAI.Models;
 using StorybookCabinPOCBlazor.Models;
 using System.Text;
@@ -28,7 +29,7 @@ namespace StorybookCabinPOCBlazor.Api
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] UserData userData)
+        public async Task<IActionResult> PostAsync([FromBody] UserData userData)
         {
             // Verify the user's identity by checking the database
             var userName = userData.UserName;
@@ -40,25 +41,25 @@ namespace StorybookCabinPOCBlazor.Api
                 .Where(u => u.Email == userName && u.Objectidentifier == hTTPToken)
                 .FirstOrDefault();
 
-            string openAIResponse = "";
+            string OpenAIResponse = "";
 
             if (user != null)
             {
                 // Call GetOpenAIResponse to get a response from OpenAI
-                var OpenAIReponse = GetOpenAIResponse(userData);
+                var OpenAIReponseMessage = await GetOpenAIResponse(userData);
 
-                if(OpenAIReponse.Result != null)
+                if(OpenAIReponseMessage != null)
                 {
-                    openAIResponse = OpenAIReponse.Result;
+                    OpenAIResponse = OpenAIReponseMessage.Content;
                 }
             }
             else
             {
-                openAIResponse = "You are not authorized to use this service.";
+                OpenAIResponse = "You are not authorized to use this service.";
             }
 
             MessageData objMessageData = new MessageData();
-            objMessageData.message = $"{openAIResponse}";
+            objMessageData.message = $"{OpenAIResponse}";
 
             // Return objMessageData as JSON
             return Ok(objMessageData);
@@ -72,7 +73,7 @@ namespace StorybookCabinPOCBlazor.Api
         }
 
         // OpenAI
-        private async Task<string> GetOpenAIResponse(UserData userData)
+        private async Task<OpenAI.Chat.Message> GetOpenAIResponse(UserData userData)
         {
             // Get the API key from the appsettings.json file
             var ApiKey = _openAIServiceOptions.ApiKey;
@@ -121,9 +122,8 @@ namespace StorybookCabinPOCBlazor.Api
             var chatResponse = await api.ChatEndpoint.GetCompletionAsync(chatRequest);
 
             // Return the JSON response
-            return chatResponse.FirstChoice.Message.Content;
+            return chatResponse.FirstChoice.Message;
         }
-
     }
 
     public class GameBoardCell
