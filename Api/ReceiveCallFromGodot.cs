@@ -50,7 +50,7 @@ namespace StorybookCabinPOCBlazor.Api
 
                 if(OpenAIReponseMessage != null)
                 {
-                    OpenAIResponse = OpenAIReponseMessage.Content;
+                    OpenAIResponse = Convert.ToString(OpenAIReponseMessage.Content);
                 }
             }
             else
@@ -101,7 +101,11 @@ namespace StorybookCabinPOCBlazor.Api
             sb.AppendLine("");
             sb.AppendLine("#3 - A #CharacterInfo coordinate cannot occupy the same coordinate as another character.");
             sb.AppendLine("");
-            sb.AppendLine("#4 - Only update #CharacterInfo coordinates");
+			sb.AppendLine("#4 - A #CharacterInfo coordinate needs to always end with a .5");
+			sb.AppendLine("");
+			sb.AppendLine("#5 - A #CharacterInfo can only be listed once in the JSON return");
+			sb.AppendLine("");
+			sb.AppendLine("#6 - Only update #CharacterInfo coordinates");
             sb.AppendLine("");
             sb.AppendLine("#Player Instructions: ");
             sb.AppendLine(userData.UserText);
