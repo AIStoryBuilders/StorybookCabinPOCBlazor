@@ -97,15 +97,13 @@ namespace StorybookCabinPOCBlazor.Api
             sb.AppendLine("#1 - Only output an updated #CharacterInfo json object that updates the character coordinates on the gameboard ");
             sb.AppendLine("based on the #PlayerInstructions. ");
             sb.AppendLine("");
-            sb.AppendLine("#2 - Only allow #CharacterInfo to put a character in a gameboard coordinate thay is Type empty.");
+            sb.AppendLine("#2 - Only allow #CharacterInfo to put a character in a gameboard coordinate that is Type empty.");
             sb.AppendLine("");
             sb.AppendLine("#3 - A #CharacterInfo coordinate cannot occupy the same coordinate as another character.");
-            sb.AppendLine("");
-			sb.AppendLine("#4 - A #CharacterInfo coordinate needs to always end with a .5");
 			sb.AppendLine("");
-			sb.AppendLine("#5 - A #CharacterInfo can only be listed once in the JSON return");
+			sb.AppendLine("#4 - A #CharacterInfo can only be listed once in the JSON return");
 			sb.AppendLine("");
-			sb.AppendLine("#6 - Only update #CharacterInfo coordinates");
+			sb.AppendLine("#5 - Only update #CharacterInfo coordinates");
             sb.AppendLine("");
             sb.AppendLine("#Player Instructions: ");
             sb.AppendLine(userData.UserText);
