@@ -8,6 +8,7 @@ using OpenAI;
 using OpenAI.Chat;
 using OpenAI.Models;
 using StorybookCabinPOCBlazor.Models;
+using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Text.Json;
 
@@ -19,13 +20,16 @@ namespace StorybookCabinPOCBlazor.Api
     {
         private readonly OpenAIServiceOptions _openAIServiceOptions;
         private StorybookCabinPOCBlazorContext _storybookCabinPOCBlazorContext;
+        private StorybookCabinPOCBlazorService _storybookCabinPOCBlazorService;
 
         public ReceiveCallFromGodot(
             IOptions<OpenAIServiceOptions> openAIServiceOptions,
-            StorybookCabinPOCBlazorContext storybookCabinPOCBlazorContext)
+            StorybookCabinPOCBlazorContext storybookCabinPOCBlazorContext,
+            StorybookCabinPOCBlazorService storybookCabinPOCBlazorService)
         {
             _openAIServiceOptions = openAIServiceOptions.Value;
             _storybookCabinPOCBlazorContext = storybookCabinPOCBlazorContext;
+            _storybookCabinPOCBlazorService = storybookCabinPOCBlazorService;
         }
 
         [HttpPost]
@@ -45,12 +49,26 @@ namespace StorybookCabinPOCBlazor.Api
 
             if (user != null)
             {
-                // Call GetOpenAIResponse to get a response from OpenAI
-                var OpenAIReponseMessage = await GetOpenAIResponse(userData);
+                var credits = await _storybookCabinPOCBlazorService.GetUserCreditsFromObjectidentifierAsync(user.Objectidentifier);
 
-                if(OpenAIReponseMessage != null)
+                // If use has enough credits, proceed
+                if (credits >= 1)
                 {
-                    OpenAIResponse = Convert.ToString(OpenAIReponseMessage.Content);
+                    // Call GetOpenAIResponse to get a response from OpenAI
+                    var OpenAIReponseMessage = await GetOpenAIResponse(userData);
+
+                    if (OpenAIReponseMessage != null)
+                    {
+                        // Deduct a credit from the user
+                        await _storybookCabinPOCBlazorService.DeleteCreditFromUser(user.Id);
+
+                        // Return the response from OpenAI
+                        OpenAIResponse = Convert.ToString(OpenAIReponseMessage.Content);
+                    }
+                }
+                else
+                {
+                    OpenAIResponse = "You do not have enough credits to use this service.";
                 }
             }
             else

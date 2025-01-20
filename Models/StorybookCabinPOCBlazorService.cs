@@ -132,7 +132,7 @@ namespace StorybookCabinPOCBlazor.Models
         #region public async Task DeleteCreditFromUser(int UserId)
         public async Task DeleteCreditFromUser(int UserId)
         {
-            var objCredit = await _context.Credits.Where(x => x.UserId == UserId).FirstOrDefaultAsync();
+            var objCredit = await _context.Credits.Where(x => x.UserId == UserId).OrderBy(x => x.CreatedDate).FirstOrDefaultAsync();
 
             if (objCredit != null)
             {
